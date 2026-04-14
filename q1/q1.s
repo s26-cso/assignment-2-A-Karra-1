@@ -25,7 +25,7 @@ make_node:
     addi a0, x0, NODE_SIZE
     call malloc
 
-    sd s0, NODE_VAL(a0)
+    sw s0, NODE_VAL(a0)
     sd x0, NODE_LEFT(a0)
     sd x0, NODE_RIGHT(a0)
 
@@ -56,7 +56,7 @@ insert_base_case:
 
 insert_usual_case:
 
-    ld t0, NODE_VAL(a0)
+    lw t0, NODE_VAL(a0)
 
     ble a1, t0, insert_left
     bgt a1, t0, insert_right
@@ -102,7 +102,7 @@ get:
 get_while:
     beq a0, x0, get_end
 
-    ld t0, NODE_VAL(a0)
+    lw t0, NODE_VAL(a0)
     beq a1, t0, get_end
     blt a1, t0, go_left
     bgt a1, t0, go_right
@@ -125,13 +125,14 @@ getAtMost:
     add a1, t2, x0
 
     # Now after swapping again a0 has root, a1 has val
-    beq a0, x0, getAtMost_end
+    beq a0, x0, return_neg1 
+    ## if root == NULL, return -1
     addi t1, x0, -1
 
 getAtMost_while:
     beq a0, x0, getAtMost_end
 
-    ld t0, NODE_VAL(a0)
+    lw t0, NODE_VAL(a0)
     beq a1, t0, exact_match
     blt a1, t0, goAtMost_left
     bgt a1, t0, goAtMost_right
@@ -150,4 +151,8 @@ exact_match:
 
 getAtMost_end:
     add a0, t1, x0
+    ret
+
+return_neg1:
+    li a0, -1
     ret
