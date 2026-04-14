@@ -2,6 +2,7 @@
 
 .data
     format_str: .string "%lld "
+    format_str_no_space: .string "%lld"
     newline_str: .string "\n"
 
 .text
@@ -146,16 +147,31 @@ print_setup:
 
 print_loop:
     beq s5, s0, print_done
+    # check if this is the last element (s5 == s0-1)
+    addi t2, s0, -1
+    beq s5, t2, print_last
 
     slli t0, s5, 3
     add t1, s2, t0
-    ld a1, 0(t1)        
+    ld a1, 0(t1)
     
-    la a0, format_str   
+    la a0, format_str    # "%lld "
+    
+    call printf
+    
+    addi s5, s5, 1    
+    beq x0, x0, print_loop
+
+print_last:
+    slli t0, s5, 3
+    add t1, s2, t0
+    ld a1, 0(t1)
+    
+    la a0, format_str_no_space    # "%lld"
+    
     call printf
 
-    addi s5, s5, 1
-    beq x0, x0, print_loop
+    # now it automatically falls back to print_done, no need for previous print_loop check that is now obselete
 
 print_done:
     la a0, newline_str
